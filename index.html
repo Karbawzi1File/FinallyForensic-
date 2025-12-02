@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CopyPaste Forensics | پنل تشخیص اسکمر و فایل‌های کپی پیست</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&family=Vazirmatn:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #D4AF37;
+            --gold-light: #FFF8DC;
+            --black: #0A0A0A;
+            --black-light: #1A1A1A;
+            --black-lighter: #2A2A2A;
+            --red: #C41E3A;
+            --green: #00FF87;
+            --blue: #00B4FF;
+            --purple: #9D4EDD;
+            --text: #FFFFFF;
+            --text-secondary: #CCCCCC;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; }
+        body { font-family: 'Vazirmatn', sans-serif; background-color: var(--black); color: var(--text); min-height: 100vh; position: relative; }
+        #bg-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; }
+        .particle { position: absolute; background: radial-gradient(circle, var(--gold) 0%, transparent 70%); border-radius: 50%; opacity: 0.15; animation: float 20s infinite linear; }
+        @keyframes float { 0% { transform: translateY(0) translateX(0) scale(1); } 25% { transform: translateY(-50px) translateX(50px) scale(1.1); } 50% { transform: translateY(-100px) translateX(0) scale(1); } 75% { transform: translateY(-50px) translateX(-50px) scale(0.9); } 100% { transform: translateY(0) translateX(0) scale(1); } }
+        .gold-line { position: absolute; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.08; animation: scan 12s infinite linear; }
+        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .codm-logo { position: absolute; opacity: 0.02; font-size: 150px; color: var(--gold); transform: rotate(-15deg); user-select: none; z-index: -2; font-family: 'Orbitron', sans-serif; font-weight: 700; }
+        .glitch-effect { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.015"><path d="M0,0 L100,0 L100,100 Z" fill="%23FFD700"/></svg>'); z-index: -1; opacity: 0.05; animation: glitch 25s infinite linear; }
+        @keyframes glitch { 0%,100%{transform:translate(0,0)scale(1);opacity:0.05}10%{transform:translate(-1px,0.5px)scale(1.005);opacity:0.06}20%{transform:translate(0.5px,-1px)scale(1)}30%{transform:translate(-0.5px,1px)scale(0.995)}40%{transform:translate(1px,-0.5px)scale(1.005)}50%{transform:translate(-0.5px,0.5px)scale(1)}60%{transform:translate(0.5px,-0.5px)scale(1.01)}70%{transform:translate(-1px,1px)scale(0.99)}80%{transform:translate(1px,-1px)scale(1)}90%{transform:translate(-0.5px,0.5px)scale(1.005)} }
+        .container { width: 100%; max-width: 100%; margin: 0 auto; padding: 15px; position: relative; z-index: 1; }
+        header { background: linear-gradient(135deg, rgba(10,10,10,0.98), rgba(26,26,26,0.98)); border-radius: 16px; padding: 20px; margin-bottom: 25px; border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.2), 0 8px 25px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,215,0,0.08); position: relative; overflow: hidden; backdrop-filter: blur(8px); }
+        header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+        .header-content { display: flex; flex-direction: column; gap: 15px; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 70px; height: 70px; background: linear-gradient(135deg, var(--black-light), var(--black-lighter)); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.2); position: relative; }
+        .logo-icon::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--gold); animation: spin 3s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .logo-icon i { font-size: 2rem; color: var(--gold); text-shadow: 0 0 8px rgba(255,215,0,0.4); }
+        .logo-text h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; background: linear-gradient(135deg, var(--gold), var(--gold-dark), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 15px rgba(255,215,0,0.2); letter-spacing: 0.5px; margin-bottom: 5px; }
+        .logo-text .slogan { font-size: 1rem; color: var(--gold-light); font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; text-shadow: 0 0 8px rgba(255,215,0,0.2); }
+        .logo-text p { color: var(--text-secondary); font-size: 0.9rem; font-family: 'Rajdhani', sans-serif; }
+        .channel-info { text-align: right; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,215,0,0.2); }
+        .channel-info p { margin-bottom: 6px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+        .channel-info i { color: var(--gold); width: 18px; }
+        .channel-link { color: var(--gold); text-decoration: none; font-weight: 600; }
+        .channel-link:hover { color: #FFF; text-shadow: 0 0 8px rgba(255,215,0,0.4); }
+        .special-slogan { text-align: center; margin: 15px 0 20px; padding: 15px; background: linear-gradient(90deg, rgba(255,215,0,0.08), rgba(255,215,0,0.15), rgba(255,215,0,0.08)); border-radius: 12px; border: 1px solid rgba(255,215,0,0.2); position: relative; overflow: hidden; }
+        .special-slogan::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); animation: shimmer 4s infinite; }
+        @keyframes shimmer { 100% { left: 100%; } }
+        .special-slogan h2 { font-family: 'Cinzel', serif; font-size: 1.6rem; background: linear-gradient(135deg, var(--gold), #FFE55C, var(--gold)); -webkit-background-clip: text; color: transparent; text-shadow: 0 0 15px rgba(255,215,0,0.4); }
+        .header-stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top: 15px; }
+        .stat-box { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px; border: 1px solid rgba(255,215,0,0.15); text-align: center; transition: transform 0.3s; }
+        .stat-box:hover { transform: translateY(-3px); border-color: var(--gold); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; color: var(--gold); text-shadow: 0 0 8px rgba(255,215,0,0.2); }
+        .main-content { display: flex; flex-direction: column; gap: 25px; margin-bottom: 25px; }
+        .panel-section, .results-section { background: linear-gradient(135deg, rgba(26,26,26,0.97), rgba(20,20,20,0.97)); border-radius: 16px; padding: 20px; border: 2px solid rgba(255,215,0,0.25); box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,215,0,0.04); backdrop-filter: blur(8px); position: relative; overflow: hidden; }
+        .panel-section::before, .results-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+        .section-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,215,0,0.25); }
+        .upload-area { border: 2px dashed rgba(255,215,0,0.25); border-radius: 12px; padding: 25px 15px; text-align: center; margin-bottom: 20px; transition: all 0.3s; background: rgba(0,0,0,0.25); }
+        .upload-area:hover, .upload-area.highlight { border-color: var(--gold); background: rgba(255,215,0,0.05); }
+        .upload-area i { font-size: 3rem; color: var(--gold); margin-bottom: 15px; opacity: 0.7; }
+        .upload-text h3 { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; color: var(--gold); }
+        .upload-options { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .option-btn { flex: 1; min-width: 140px; padding: 15px; border-radius: 10px; border: 2px solid rgba(255,215,0,0.25); background: rgba(0,0,0,0.3); color: var(--text); font-size: 0.95rem; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .option-btn.active { border-color: var(--gold); background: rgba(255,215,0,0.1); box-shadow: 0 0 15px rgba(255,215,0,0.15); }
+        .option-btn:hover { border-color: var(--gold); transform: translateY(-2px); }
+        .option-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+        .text-input { width: 100%; height: 220px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,215,0,0.25); border-radius: 10px; padding: 15px; color: var(--text); font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem; resize: vertical; transition: border 0.3s; }
+        .text-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.15); }
+        .char-counter { position: absolute; bottom: 10px; left: 15px; font-size: 0.75rem; color: var(--text-secondary); background: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 8px; }
+        .action-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .btn { padding: 16px 20px; border-radius: 10px; border: none; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; position: relative; overflow: hidden; width: 100%; }
+        .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: left 0.5s; }
+        .btn:hover::before { left: 100%; }
+        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); box-shadow: 0 4px 12px rgba(255,215,0,0.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.35); }
+        .btn-secondary { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
+        .btn-download { background: linear-gradient(135deg, var(--green), #00CC70); color: var(--black); box-shadow: 0 4px 12px rgba(0,255,135,0.25); }
+        .loading-container { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 15px; text-align: center; }
+        .loading-animation { width: 80px; height: 80px; margin-bottom: 20px; position: relative; }
+        .loading-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 25px; height: 25px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 15px var(--gold), 0 0 30px var(--gold); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{transform:translate(-50%,-50%)scale(1)} 50%{transform:translate(-50%,-50%)scale(1.1)} }
+        .loading-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--gold); animation: spin 2s linear infinite; }
+        .loading-ring:nth-child(2) { border-top-color: var(--gold-dark); animation-direction: reverse; animation-duration: 1.5s; }
+        .results-container { display: none; }
+        .file-type-badge { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); padding: 6px 15px; border-radius: 20px; font-weight: 700; }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; }
+        .status-original { background: rgba(0,255,135,0.15); color: var(--green); border: 1px solid rgba(0,255,135,0.3); }
+        .status-copied { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+        .status-suspicious { background: rgba(196,30,58,0.15); color: var(--red); border: 1px solid rgba(196,30,58,0.3); }
+        footer { text-align: center; padding: 20px; color: var(--text-secondary); font-size: 0.85rem; border-top: 1px solid rgba(255,215,0,0.15); margin-top: 25px; background: rgba(10,10,10,0.7); border-radius: 12px; backdrop-filter: blur(8px); }
+        .version { color: var(--gold); font-family: 'Cinzel', serif; font-size: 1rem; }
+        @media (min-width: 768px) { .header-stats { grid-template-columns: repeat(4,1fr); } .action-buttons { flex-direction: row; } .upload-options { flex-wrap: nowrap; } }
+        @media (min-width: 1024px) { .container { max-width: 1200px; } .main-content { flex-direction: row; } }
+    </style>
+</head>
+<body>
+    <div id="bg-animation"></div>
+    <div class="glitch-effect"></div>
+    <div class="codm-logo" style="top:5%;left:2%;">CFG</div>
+    <div class="codm-logo" style="bottom:5%;right:2%;">ANALYZE</div>
+
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="logo-text">
+                        <h1>COPYPASTE FORENSICS</h1>
+                        <div class="slogan">Karbawzi انتخاب حرفه‌ای‌هاست</div>
+                        <p>پنل تشخیص اسکمر و فایل‌های کپی پیست</p>
+                    </div>
+                </div>
+                <div class="channel-info">
+                    <p><i class="fas fa-broadcast-tower"></i> کانال: <a href="https://t.me/Karbawzi1File" target="_blank" class="channel-link">@Karbawzi1File</a></p>
+                    <p><i class="fas fa-user-shield"></i> ادمین: <a href="https://t.me/Karbawzi1PV" target="_blank" class="channel-link">@Karbawzi1PV</a></p>
+                </div>
+            </div>
+            <div class="special-slogan">
+                <h2>Karbawzi انتخاب حرفه‌ای‌هاست</h2>
+                <p>تشخیص دقیق اسکمرها و فایل‌های کپی پیست</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-box"><div class="stat-value" id="totalFiles">۰</div><div class="stat-label">فایل بررسی شده</div></div>
+                <div class="stat-box"><div class="stat-value" id="originalFiles">۰</div><div class="stat-label">منبع اصلی</div></div>
+                <div class="stat-box"><div class="stat-value" id="copiedFiles">۰</div><div class="stat-label">کپی شده</div></div>
+                <div class="stat-box"><div class="stat-value" id="karbawziFiles">۰</div><div class="stat-label">منبع Karbawzi</div></div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <section class="panel-section">
+                <h2 class="section-title"><i class="fas fa-paste"></i> جایگذاری محتوا</h2>
+                <div class="upload-area" id="uploadArea"><i class="fas fa-file-import"></i><div class="upload-text"><h3>محتوا را اینجا جایگذاری کنید</h3><p>متن فایل کانفیگ خود را کپی کرده و در اینجا پیست کنید</p></div></div>
+                <div class="upload-options">
+                    <button class="option-btn active" id="pasteBtn"><i class="fas fa-paste"></i><span>جایگذاری متن</span></button>
+                    <button class="option-btn disabled" id="uploadBtn"><i class="fas fa-file-upload"></i><span>آپلود فایل (غیرفعال)</span></button>
+                </div>
+                <div class="text-input-container">
+                    <textarea class="text-input" id="textInput" placeholder="متن فایل را اینجا وارد کنید..."></textarea>
+                    <div class="char-counter">کاراکتر: <span id="charCount">۰</span></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="analyzeBtn"><i class="fas fa-search"></i> آنالیز فوری</button>
+                    <button class="btn btn-secondary" id="clearBtn"><i class="fas fa-redo"></i> پاکسازی</button>
+                    <button class="btn btn-download" id="downloadBtn" style="display:none;"><i class="fas fa-download"></i> دانلود آنالیز</button>
+                </div>
+                <div class="loading-container" id="loadingSection">
+                    <div class="loading-animation"><div class="loading-ring"></div><div class="loading-ring"></div><div class="loading-ring"></div><div class="loading-core"></div></div>
+                    <div class="loading-text">FORENSIC SCAN</div>
+                    <p class="loading-subtext">در حال بررسی عمیق فایل...</p>
+                </div>
+            </section>
+
+            <section class="results-section">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> نتایج آنالیز</h2>
+                <div class="results-container" id="resultsContainer">
+                    <div class="file-header">
+                        <div class="file-type-badge" id="fileTypeBadge">INI</div>
+                        <div class="file-status">
+                            <span class="status-badge status-original" id="statusBadge">منبع اصلی</span>
+                            <span class="status-badge status-copied" id="copyBadge">کپی شده</span>
+                        </div>
+                    </div>
+                    <div class="analysis-grid">
+                        <div class="analysis-card"><i class="fas fa-file-code"></i><div class="card-title">نوع فایل</div><div class="card-value" id="fileType">INI</div></div>
+                        <div class="analysis-card"><i class="fas fa-ruler-combined"></i><div class="card-title">حجم فایل</div><div class="card-value" id="fileSize">۲.۴KB</div></div>
+                        <div class="analysis-card"><i class="fas fa-bars"></i><div class="card-title">تعداد خطوط</div><div class="card-value" id="lineCount">۴۸</div></div>
+                        <div class="analysis-card"><i class="fas fa-layer-group"></i><div class="card-title">تعداد هدرها</div><div class="card-value" id="headerCount">۶</div></div>
+                    </div>
+                    <div class="source-section">
+                        <h3 class="source-title"><i class="fas fa-dna"></i> تشخیص منبع</h3>
+                        <div class="source-details">
+                            <div class="source-item"><div class="source-label">منبع اصلی</div><div class="source-value" id="mainSource">Karbawzi1File</div></div>
+                            <div class="source-item"><div class="source-label">میزان تطابق</div><div class="source-value" id="matchPercentage">۹۸%</div></div>
+                        </div>
+                    </div>
+                    <div class="details-section">
+                        <h3 class="details-title"><i class="fas fa-search"></i> جزئیات آنالیز</h3>
+                        <div class="details-content" id="detailsContent"></div>
+                    </div>
+                </div>
+                <div class="no-results" id="noResults">
+                    <div class="upload-area" style="border-style:solid;background:rgba(0,0,0,0.15);">
+                        <i class="fas fa-microscope" style="opacity:0.4;"></i>
+                        <div class="upload-text"><h3>در انتظار محتوا</h3><p>پس از جایگذاری متن و آنالیز، نتایج اینجا نمایش داده می‌شود.</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <div class="version">COPYPASTE FORENSICS v1.2</div>
+            <p>توسعه‌یافته برای <a href="https://t.me/Karbawzi1File" target="_blank" class="channel-link">@Karbawzi1File</a></p>
+            <div class="copyright">Karbawzi انتخاب حرفه‌ای‌هاست</div>
+        </footer>
+    </div>
+
+    <script>
+        const VALID_SOURCES=["Karbawzi","karbawzi","Karbawzi1File","Karbawzi1PV","Ahmad Jani","ahmad jani","4B61726261777A69","41686D6164204A616E69","کاربازی","@Karbawzi1File","@Karbawzi1PV"];
+        const SCAMMER_INDICATORS=["cobra","smoke","CHEATGANG","proplayer","eng oscar","polo cheat","shadow tracker","stextra",".sav",".pak","Made by","Amin","powercell","999999","aimbot","magicbullet","wallhack","cheat","hack"];
+        let totalFilesAnalyzed=0,originalFilesCount=0,copiedFilesCount=0,karbawziFilesCount=0,downloadCounter=1,currentAnalysisData=null;
+        const textInput=document.getElementById('textInput'),analyzeBtn=document.getElementById('analyzeBtn'),clearBtn=document.getElementById('clearBtn'),downloadBtn=document.getElementById('downloadBtn'),loadingSection=document.getElementById('loadingSection'),resultsContainer=document.getElementById('resultsContainer'),noResults=document.getElementById('noResults'),charCountElement=document.getElementById('charCount');
+        const fileTypeBadge=document.getElementById('fileTypeBadge'),statusBadge=document.getElementById('statusBadge'),copyBadge=document.getElementById('copyBadge'),fileTypeElement=document.getElementById('fileType'),fileSizeElement=document.getElementById('fileSize'),lineCountElement=document.getElementById('lineCount'),headerCountElement=document.getElementById('headerCount'),mainSourceElement=document.getElementById('mainSource'),matchPercentageElement=document.getElementById('matchPercentage'),detailsContent=document.getElementById('detailsContent');
+        const totalFilesElement=document.getElementById('totalFiles'),originalFilesElement=document.getElementById('originalFiles'),copiedFilesElement=document.getElementById('copiedFiles'),karbawziFilesElement=document.getElementById('karbawziFiles');
+
+        function createBackground(){const bg=document.getElementById('bg-animation');bg.innerHTML='';for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';const s=Math.random()*60+15;p.style.width=p.style.height=`\( {s}px`;p.style.left=` \){Math.random()*100}%`;p.style.top=`\( {Math.random()*100}%`;p.style.opacity=Math.random()*0.1+0.05;p.style.animationDuration=` \){Math.random()*25+15}s`;bg.appendChild(p);}for(let i=0;i<5;i++){const l=document.createElement('div');l.className='gold-line';l.style.width=`\( {Math.random()*200+80}px`;l.style.top=` \){Math.random()*100}%`;l.style.animationDuration=`${Math.random()*15+8}s`;bg.appendChild(l);}}
+
+        textInput.addEventListener('input',()=>{charCountElement.textContent=textInput.value.length.toLocaleString('fa-IR');});
+        analyzeBtn.addEventListener('click',()=>{const t=textInput.value.trim();if(!t){showNotification('لطفاً محتوا را وارد کنید', 'warning');return;}showLoading();setTimeout(()=>{analyzeContent(t);hideLoading();updateStats();downloadBtn.style.display='flex';},2000);});
+        clearBtn.addEventListener('click',()=>{textInput.value='';charCountElement.textContent='۰';resultsContainer.style.display='none';noResults.style.display='block';downloadBtn.style.display='none';});
+        downloadBtn.addEventListener('click',downloadAnalysis);
+
+        function showLoading(){loadingSection.style.display='flex';resultsContainer.style.display='none';noResults.style.display='none';}
+        function hideLoading(){loadingSection.style.display='none';resultsContainer.style.display='block';}
+
+        function showNotification(m,t){const n=document.createElement('div');n.style.cssText=`position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${t==='warning'?'rgba(255,215,0,0.9)':t==='error'?'rgba(196,30,58,0.9)':'rgba(0,255,135,0.9)'};color:#000;padding:12px 20px;border-radius:8px;z-index:10000;box-shadow:0 4px 15px rgba(0,0,0,0.3);max-width:90%;text-align:center;animation:slideIn .3s`;n.textContent=m;document.body.appendChild(n);setTimeout(()=>{n.style.animation='slideOut .3s';setTimeout(()=>{document.body.removeChild(n);},300);},4000);}
+
+        function analyzeSource(c){const l=c.toLowerCase();let isKarbawzi=false,conf=0,src="ناشناس";for(const s of VALID_SOURCES){if(c.includes(s)||l.includes(s.toLowerCase())){isKarbawzi=true;src="Karbawzi (منبع اصلی)";conf=98;break;}}if(!isKarbawzi)for(const s of SCAMMER_INDICATORS){if(l.includes(s)){src="اسکمر / کپی پیست";conf=15+Math.random()*20;break;}}return{isKarbawzi,mainSource:src,confidence:Math.round(conf)};}
+
+        function analyzeCopy(c){const l=c.toLowerCase();let isCopy=false,conf=30,methods=[];for(const s of SCAMMER_INDICATORS){if(l.includes(s)){isCopy=true;conf+=40;methods.push(`نشانه اسکمر: ${s}`);}}const lines=c.split('\n');const dupes=findDuplicateLines(lines);if(dupes.length>8){isCopy=true;conf+=15;methods.push("تکرار خطوط");}conf=Math.min(99,conf);return{isCopy,confidence:Math.round(conf),methods};}
+
+        function findDuplicateLines(lines){const map=new Map(),dupes=[];for(const line of lines){const t=line.trim();if(t&&!t.startsWith(';')&&!t.startsWith('//')){if(map.has(t)){if(!dupes.includes(t))dupes.push(t);}else map.set(t,1);}}return dupes;}
+
+        function analyzeContent(content){
+            const lines=content.split('\n'),lineCount=lines.length,fileSize=formatFileSize(content.length);
+            const source=analyzeSource(content),copy=analyzeCopy(content);
+            currentAnalysisData={fileType:"CFG/INI",fileSize,lineCount,mainSource:source.mainSource,copyConfidence:copy.confidence,copyMethods:copy.methods,recommendation:source.isKarbawzi?"این فایل از منبع اصلی Karbawzi است - 100% امن":"این فایل اسکمر/کپی است - از آن استفاده نکنید!"};
+            fileTypeBadge.textContent=fileTypeElement.textContent="CFG/INI";fileSizeElement.textContent=fileSize;lineCountElement.textContent=lineCount.toLocaleString('fa-IR');
+            mainSourceElement.textContent=source.mainSource;matchPercentageElement.textContent=`${source.confidence}%`;
+            if(source.isKarbawzi){statusBadge.className="status-badge status-original";statusBadge.textContent="منبع اصلی Karbawzi";copyBadge.style.display="none";karbawziFilesCount++;originalFilesCount++;}else{statusBadge.className="status-badge status-suspicious";statusBadge.textContent="اسکمر / کپی";copyBadge.style.display="inline-block";copyBadge.textContent=`کپی (${copy.confidence}%)`;copiedFilesCount++;}
+            totalFilesAnalyzed++;generateDetails(content,source,copy);
+        }
+
+        function generateDetails(c,src,copy){
+            let h=`<div class="detail-line highlight"><strong>نتیجه نهایی:</strong></div><div class="detail-line">${src.isKarbawzi?"این فایل از منبع اصلی Karbawzi است - 100% امن و معتبر":"این فایل اسکمر/کپی پیست است - از آن استفاده نکنید!"}</div>`;
+            if(!src.isKarbawzi && copy.methods.length>0){h+=`<div class="detail-line highlight"><strong>نشانه‌های تشخیص:</strong></div>`;copy.methods.forEach(m=>h+=`<div class="detail-line">• ${m}</div>`);}
+            detailsContent.innerHTML=h;
+        }
+
+        function formatFileSize(b){if(b<1024)return b+"B";if(b<1024*1024)return(b/1024).toFixed(1)+"KB";return(b/(1024*1024)).toFixed(1)+"MB";}
+
+        function downloadAnalysis(){
+            const t=new Date().toLocaleString('fa-IR'),f=`Karbawzi_Analysis_\( {downloadCounter}_ \){t.replace(/[\/:]/g,'-')}.txt`;
+            let txt=`آنالیز توسط پنل Karbawzi Forensics\n\( {"=".repeat(60)}\nتاریخ: \){t}\nوضعیت: \( {currentAnalysisData.mainSource.includes("Karbawzi")?"منبع اصلی Karbawzi - امن":"اسکمر / کپی پیست - خطرناک"}\nتوصیه: \){currentAnalysisData.recommendation}\n\nکانال رسمی: @Karbawzi1File\nادمین: @Karbawzi1PV\nKarbawzi انتخاب حرفه‌ای‌هاست`;
+            const blob=new Blob(["\uFEFF"+txt],{type:"text/plain;charset=utf-8"});
+            const url=URL.createObjectURL(blob);
+            const a=document.createElement("a");a.href=url;a.download=f;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+            downloadCounter++;showNotification("آنالیز دانلود شد", "info");
+        }
+
+        function updateStats(){totalFilesElement.textContent=totalFilesAnalyzed.toLocaleString('fa-IR');originalFilesElement.textContent=originalFilesCount.toLocaleString('fa-IR');copiedFilesElement.textContent=copiedFilesCount.toLocaleString('fa-IR');karbawziFilesElement.textContent=karbawziFilesCount.toLocaleString('fa-IR');}
+
+        document.addEventListener('DOMContentLoaded',()=>{createBackground();setTimeout(()=>{showNotification('فقط Karbawzi منبع اصلیه!', 'info');},800);});
+    </script>
+</body>
+</html>
